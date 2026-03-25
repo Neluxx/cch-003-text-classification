@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from src.classifier import classify_file
+from src.classifier import Classifier
 
 
 def print_result(result) -> None:
@@ -17,6 +17,7 @@ def main() -> int:
     parser.add_argument("files", nargs="+", help="One or more text files to classify.")
     args = parser.parse_args()
 
+    classifier = Classifier()
     exit_code = 0
     for file_path in args.files:
         path = Path(file_path)
@@ -26,7 +27,7 @@ def main() -> int:
             continue
 
         try:
-            print_result(classify_file(str(path)))
+            print_result(classifier.classify_file(str(path)))
         except ConnectionError as exc:
             print(f"\nConnection Error: {exc}", file=sys.stderr)
             return 1
