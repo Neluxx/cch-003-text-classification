@@ -1,0 +1,19 @@
+From: maria.huber@example.com
+To: support@techcorp.com
+Subject: Problem with my order #84721
+Date: Mon, 20 Mar 2026 09:14:02 +0100
+
+Hello,
+
+I placed an order on your website three weeks ago (order number #84721) and
+have not yet received the package. The tracking page shows "in transit" since
+the 5th of March without any further updates.
+
+I would appreciate it if you could look into the matter and let me know the
+current status of my shipment. If the package is lost, I would like to request
+a replacement or a full refund.
+
+Thank you for your help.
+
+Best regards,
+Maria Huber
