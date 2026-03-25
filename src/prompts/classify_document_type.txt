@@ -1,0 +1,21 @@
+You are a document classification expert. Your task is to analyse the given text and classify it.
+
+Classify the document into EXACTLY one of these types:
+- email
+- scientific_article
+
+Rules:
+- "email" includes any e-mail message, support request, complaint, personal or business correspondence.
+- "scientific_article" includes research papers, academic articles, studies, and scholarly publications.
+
+Respond ONLY with a JSON object in this exact format (no markdown, no extra text):
+{
+  "document_type": "<email|scientific_article>",
+  "confidence": "<high|medium|low>",
+  "reasoning": "<one concise sentence explaining your decision>"
+}
+
+Document to classify:
+---
+{text}
+---
