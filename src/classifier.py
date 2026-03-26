@@ -15,13 +15,14 @@ class ClassificationResult:
     confidence: str
     reasoning: str
     raw_file: str
+    model: str
 
 
 class Classifier:
-    def _call_ollama(self, prompt: str) -> str:
+    def _call_ollama(self, prompt: str, model: str = DEFAULT_MODEL) -> str:
         """Send a prompt to the local Ollama instance and return the response text."""
         payload = json.dumps({
-            "model": DEFAULT_MODEL,
+            "model": model,
             "prompt": prompt,
             "stream": False,
         }).encode("utf-8")
@@ -47,9 +48,10 @@ class Classifier:
         template = (PROMPTS_DIR / "classify_document_type.txt").read_text(encoding="utf-8")
         return template.replace("{text}", text[:4000])
 
-    def _classify_text(self, text: str) -> ClassificationResult:
+    def _classify_text(self, text: str, model: str = DEFAULT_MODEL) -> ClassificationResult:
         """Classify the provided text using a local Ollama LLM."""
-        raw_response = self._call_ollama(self._build_prompt(text))
+        prompt = self._build_prompt(text)
+        raw_response = self._call_ollama(prompt, model=model)
 
         try:
             data = json.loads(raw_response)
@@ -58,6 +60,7 @@ class Classifier:
                 confidence=data.get("confidence", "low"),
                 reasoning=data.get("reasoning", ""),
                 raw_file="",
+                model=model,
             )
         except (json.JSONDecodeError, KeyError):
             return ClassificationResult(
@@ -65,13 +68,14 @@ class Classifier:
                 confidence="low",
                 reasoning=f"Could not parse LLM response: {raw_response}",
                 raw_file="",
+                model=model,
             )
 
-    def classify_file(self, path: str) -> ClassificationResult:
+    def classify_file(self, path: str, model: str = DEFAULT_MODEL) -> ClassificationResult:
         """Read a file and classify its content."""
         with open(path, "r", encoding="utf-8", errors="replace") as fh:
             text = fh.read()
 
-        result = self._classify_text(text)
+        result = self._classify_text(text, model=model)
         result.raw_file = path
         return result

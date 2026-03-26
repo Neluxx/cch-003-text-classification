@@ -2,10 +2,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from src.classifier import Classifier
+from src.classifier import Classifier, DEFAULT_MODEL
 
 
 def print_result(result) -> None:
+    print(f"Model      : {result.model}")
     print(f"File       : {result.raw_file}")
     print(f"Type       : {result.document_type}")
     print(f"Confidence : {result.confidence}")
@@ -15,9 +16,9 @@ def print_result(result) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Text Classification Tool")
     parser.add_argument("files", nargs="+", help="One or more text files to classify.")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Ollama model name to use (default: {DEFAULT_MODEL}).")
     args = parser.parse_args()
 
-    classifier = Classifier()
     exit_code = 0
     for file_path in args.files:
         path = Path(file_path)
@@ -27,7 +28,9 @@ def main() -> int:
             continue
 
         try:
-            print_result(classifier.classify_file(str(path)))
+            classifier = Classifier()
+            result = classifier.classify_file(str(path), model=args.model)
+            print_result(result)
         except ConnectionError as exc:
             print(f"\nConnection Error: {exc}", file=sys.stderr)
             return 1
