@@ -1,12 +1,11 @@
 import json
-import urllib.request
-import urllib.error
 from dataclasses import dataclass
 from pathlib import Path
 
-PROMPTS_DIR = Path(__file__).parent / "prompts"
-OLLAMA_BASE_URL = "http://localhost:11434"
+import ollama
+
 DEFAULT_MODEL = "qwen2.5:3b"
+PROMPTS_DIR = Path(__file__).parent / "prompts"
 
 
 @dataclass
@@ -21,28 +20,13 @@ class ClassificationResult:
 class Classifier:
     def _call_ollama(self, prompt: str, model: str = DEFAULT_MODEL) -> str:
         """Send a prompt to the local Ollama instance and return the response text."""
-        payload = json.dumps({
-            "model": model,
-            "prompt": prompt,
-            "stream": False,
-        }).encode("utf-8")
-
-        request = urllib.request.Request(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-
         try:
-            with urllib.request.urlopen(request, timeout=120) as response:
-                body = json.loads(response.read().decode("utf-8"))
-                return body.get("response", "").strip()
-        except urllib.error.URLError as exc:
-            raise ConnectionError(
-                f"Could not reach Ollama at {OLLAMA_BASE_URL}. "
-                "Make sure Ollama is running (`ollama serve`)."
-            ) from exc
+            response = ollama.generate(model=model, prompt=prompt)
+            return response.response.strip()
+        except ollama.ResponseError as exc:
+            raise ConnectionError(f"Ollama error: {exc}") from exc
+        except Exception as exc:
+            raise ConnectionError(f"Could not reach Ollama. Is it running?") from exc
 
     def _build_prompt(self, text: str) -> str:
         template = (PROMPTS_DIR / "classify_document_type.txt").read_text(encoding="utf-8")
