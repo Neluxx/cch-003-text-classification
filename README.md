@@ -6,9 +6,32 @@ A CLI tool that classifies text files using a local LLM via Ollama.
 
 ## Requirements
 
-- Python 3.10+
+- [Python](https://www.python.org/) 3.14+
+- [uv](https://docs.astral.sh/uv/) (package manager)
 - [Ollama](https://ollama.com) running locally (`ollama serve`)
 - A pulled model, e.g. `ollama pull qwen2.5:3b`
+
+---
+
+## Setup
+
+### 1. Create virtual environment and install dependencies
+
+```powershell
+uv sync
+```
+
+### 2. Activate the virtual environment
+
+```powershell
+# Windows (PowerShell)
+.\.venv\Scripts\activate
+
+# Linux / macOS
+source .venv/bin/activate
+```
+
+> You need to activate the virtual environment once per terminal session before using the classifier.
 
 ---
 
@@ -61,6 +84,3 @@ python main.py test_files/email_support.txt --model llama3.2:3b
 
 The default model is `qwen2.5:3b`. Change it per-run with `--model <name>` or
 edit `DEFAULT_MODEL` in `src/classifier.py`.
-
-Ollama is expected at `http://localhost:11434`.  
-To use a remote instance, change `OLLAMA_BASE_URL` in `src/classifier.py`.
