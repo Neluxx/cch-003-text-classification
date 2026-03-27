@@ -36,7 +36,6 @@ def print_result(result) -> None:
     conf_colour = CONFIDENCE_COLORS.get(result.confidence, YELLOW)
     label = LABELS.get(result.document_type, result.document_type)
 
-    print()
     print(colored("─" * 60, BOLD))
     print(f"  {BOLD}Model      :{RESET} {result.model}")
     print(f"  {BOLD}File       :{RESET} {result.raw_file}")
@@ -44,6 +43,7 @@ def print_result(result) -> None:
     print(f"  {BOLD}Confidence :{RESET} {colored(result.confidence.upper(), conf_colour)}")
     print(f"  {BOLD}Reasoning  :{RESET} {result.reasoning}")
     print(colored("─" * 60, BOLD))
+    print()
 
 
 def print_error(message: str, exc: Exception | None = None) -> None:
