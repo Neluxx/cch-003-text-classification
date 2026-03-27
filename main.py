@@ -31,8 +31,8 @@ def main() -> int:
             continue
 
         try:
-            classifier = Classifier()
-            result = classifier.classify_file(str(path), model=args.model)
+            classifier = Classifier(model=args.model)
+            result = classifier.classify_file(str(path))
             print_result(result)
         except ConnectionError as exc:
             print_error("Connection Error", exc)
