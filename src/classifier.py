@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 import ollama
 
@@ -15,6 +16,9 @@ class ClassificationResult:
     reasoning: str
     raw_file: str
     model: str
+    email_type: Optional[str] = None
+    email_type_confidence: Optional[str] = None
+    email_type_reasoning: Optional[str] = None
 
 
 class Classifier:
@@ -31,13 +35,13 @@ class Classifier:
         except Exception as exc:
             raise ConnectionError(f"Could not reach Ollama. Is it running?") from exc
 
-    def _build_prompt(self, text: str) -> str:
-        template = (PROMPTS_DIR / "classify_document_type.txt").read_text(encoding="utf-8")
+    def _build_prompt(self, template_name: str, text: str) -> str:
+        template = (PROMPTS_DIR / template_name).read_text(encoding="utf-8")
         return template.replace("{text}", text[:4000])
 
-    def _classify_text(self, text: str) -> ClassificationResult:
-        """Classify the provided text using a local Ollama LLM."""
-        prompt = self._build_prompt(text)
+    def _classify_document_type(self, text: str) -> ClassificationResult:
+        """First stage: classify text as email or scientific_article."""
+        prompt = self._build_prompt("classify_document_type.txt", text)
         raw_response = self._call_ollama(prompt)
 
         try:
@@ -57,6 +61,30 @@ class Classifier:
                 reasoning=f"Could not parse LLM response: {raw_response}",
                 raw_file="",
             )
+
+    def _classify_email_type(self, text: str, result: ClassificationResult) -> None:
+        """Second stage: if the document is an email, classify it as support or complaint."""
+        prompt = self._build_prompt("classify_email_type.txt", text)
+        raw_response = self._call_ollama(prompt)
+
+        try:
+            data = json.loads(raw_response)
+            result.email_type = data.get("email_type", "unknown")
+            result.email_type_confidence = data.get("confidence", "low")
+            result.email_type_reasoning = data.get("reasoning", "")
+        except (json.JSONDecodeError, KeyError):
+            result.email_type = "unknown"
+            result.email_type_confidence = "low"
+            result.email_type_reasoning = f"Could not parse LLM response: {raw_response}"
+
+    def _classify_text(self, text: str) -> ClassificationResult:
+        """Classify the provided text using a local Ollama LLM."""
+        result = self._classify_document_type(text)
+
+        if result.document_type == "email":
+            self._classify_email_type(text, result)
+
+        return result
 
     def classify_file(self, path: str) -> ClassificationResult:
         """Read a file and classify its content."""

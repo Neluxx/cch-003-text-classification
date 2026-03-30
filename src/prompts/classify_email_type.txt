@@ -1,0 +1,21 @@
+You are a document classification expert. Your task is to analyse the given e-mail and classify it.
+
+Classify the e-mail into EXACTLY one of these types:
+- support
+- complaint
+
+Rules:
+- "support" includes requests for help, questions about a product or service, technical issues, and general inquiries.
+- "complaint" includes expressions of dissatisfaction, reports of a bad experience, demands for refunds or compensation, and formal complaints.
+
+Respond ONLY with a JSON object in this exact format (no markdown, no extra text):
+{
+  "email_type": "<support|complaint>",
+  "confidence": "<high|medium|low>",
+  "reasoning": "<one concise sentence explaining your decision>"
+}
+
+E-mail to classify:
+---
+{text}
+---
