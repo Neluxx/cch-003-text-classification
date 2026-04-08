@@ -1,0 +1,18 @@
+From: lukas.mayer@example.com
+To: support@techcorp.com
+Subject: How do I export my data as CSV?
+Date: Mon, 24 Mar 2026 10:03:55 +0100
+
+Hi,
+
+I hope you are doing well! I have been using TechCorp Pro for a few months now
+and I really enjoy it. I was wondering if there is a way to export my project
+data as a CSV file — I had a look through the settings and the help centre but
+could not find the option.
+
+If it is not available yet, is it something that is planned for a future
+release? I would find it really useful for my reporting workflow.
+
+Thanks a lot and keep up the great work!
+
+Lukas

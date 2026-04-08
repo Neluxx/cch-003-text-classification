@@ -1,0 +1,59 @@
+Title: CRISPR-Cas9 Gene Editing for the Treatment of Sickle Cell Disease:
+       Clinical Outcomes at 24 Months
+
+Abstract:
+Sickle cell disease (SCD) is a monogenic disorder caused by a point mutation in
+the HBB gene encoding the beta-globin subunit of haemoglobin. We report 24-month
+follow-up data from a phase I/II clinical trial in which 12 patients with severe
+SCD underwent autologous haematopoietic stem cell transplantation following
+ex vivo CRISPR-Cas9-mediated reactivation of foetal haemoglobin (HbF). Eleven
+of twelve patients achieved transfusion independence and showed sustained HbF
+levels above 30%. No off-target editing events were detected by whole-genome
+sequencing. These results support the therapeutic potential of CRISPR-based
+strategies for haemoglobinopathies.
+
+1. Introduction
+
+Sickle cell disease affects approximately 300,000 newborns annually worldwide and
+is characterised by chronic haemolytic anaemia, vaso-occlusive crises, and
+progressive organ damage. The molecular basis of SCD — a single adenine-to-thymine
+substitution at codon 6 of HBB — has been known since 1957, making it an
+attractive target for precision gene therapy.
+
+CRISPR-Cas9 has emerged as the most versatile tool for targeted genomic editing,
+enabling precise double-strand breaks at defined loci. Prior work demonstrated
+that reactivating the silenced gamma-globin genes (HBG1/HBG2) via disruption of
+the BCL11A erythroid enhancer increases HbF production sufficiently to ameliorate
+SCD pathophysiology in murine and non-human primate models.
+
+2. Study Design
+
+Eligible patients were aged 18–40 years with severe SCD, defined as two or more
+vaso-occlusive crises per year requiring hospitalisation despite hydroxyurea
+therapy. CD34+ haematopoietic stem and progenitor cells were mobilised, collected
+by apheresis, and edited ex vivo using a ribonucleoprotein CRISPR-Cas9 complex
+targeting the BCL11A enhancer. Edited cells were cryopreserved and reinfused
+following myeloablative busulfan conditioning.
+
+3. Results
+
+Median HbF levels increased from 4.2% at baseline to 38.7% at 24 months. Eleven
+patients became transfusion-independent within six months of infusion and remained
+so throughout the observation period. One patient experienced delayed engraftment
+and required a second infusion of back-up unedited cells. No vector-related
+adverse events or malignant transformations were observed.
+
+4. Conclusion
+
+This trial provides the longest follow-up to date for CRISPR-based therapy in SCD
+and demonstrates durable HbF induction with an acceptable safety profile. Larger
+randomised trials are warranted to confirm these findings across diverse patient
+populations.
+
+References:
+[1] Frangoul, H., et al. (2021). CRISPR-Cas9 gene editing for sickle cell disease
+    and β-thalassemia. New England Journal of Medicine, 384, 252-260.
+[2] Orkin, S.H., & Bauer, D.E. (2019). Emerging genetic therapy for sickle cell
+    disease. Annual Review of Medicine, 70, 257-271.
+[3] Doudna, J.A., & Charpentier, E. (2012). A programmable dual-RNA-guided DNA
+    endonuclease in adaptive bacterial immunity. Science, 337(6096), 816-821.

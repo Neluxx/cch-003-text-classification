@@ -1,0 +1,57 @@
+Title: Impact of Rising Temperatures on Global Crop Yields: A Meta-Analysis
+
+Abstract:
+Rising global temperatures pose a significant threat to agricultural productivity.
+This meta-analysis synthesises findings from 147 peer-reviewed studies published
+between 2000 and 2024 to quantify the effect of temperature increases on yields
+of four major staple crops: wheat, maize, rice, and soybean. Our results indicate
+a mean yield reduction of 5.7% per degree Celsius of warming across all crops,
+with maize showing the highest sensitivity (7.4% per °C) and rice the lowest
+(3.9% per °C). Regional variation is substantial, with tropical and subtropical
+regions facing disproportionate losses. These findings underscore the urgency of
+adaptive agricultural strategies and accelerated mitigation efforts.
+
+1. Introduction
+
+Global average surface temperatures have increased by approximately 1.2°C above
+pre-industrial levels and are projected to rise by a further 1.5–4.0°C by the
+end of the century depending on emission trajectories. Agriculture is among the
+sectors most exposed to this change, as crop growth, phenology, and water demand
+are tightly coupled to temperature regimes.
+
+Previous individual studies have reported mixed results, partly due to differences
+in methodology, crop variety, and geographic scope. A quantitative synthesis is
+therefore necessary to derive robust, generalisable estimates of temperature
+sensitivity across the major food crops that underpin global food security.
+
+2. Methods
+
+We conducted a systematic literature search using Web of Science and Scopus,
+combining the terms "crop yield", "temperature", and "climate change". Studies
+were included if they reported quantitative yield responses to defined temperature
+changes under field or semi-field conditions. A random-effects meta-analytic model
+was used to pool effect sizes, with heterogeneity assessed via the I² statistic.
+
+3. Results
+
+Across 147 studies encompassing 2,340 individual observations, warming was
+associated with yield reductions in 78% of cases. The pooled effect size
+corresponded to a 5.7% yield decline per °C (95% CI: 4.9–6.5%). Substantial
+heterogeneity was observed (I² = 73%), explained in part by latitude, irrigation
+status, and CO₂ concentration in experimental settings.
+
+4. Discussion
+
+Our findings are consistent with process-based crop model projections but suggest
+that yield losses in the tropics may be underestimated in current integrated
+assessment models. Adaptation options such as shifting planting dates, developing
+heat-tolerant varieties, and expanding irrigation coverage can partially offset
+projected losses but are unlikely to fully compensate under high-emission scenarios.
+
+References:
+[1] Lobell, D.B., & Gourdji, S.M. (2012). The influence of climate change on
+    global crop productivity. Plant Physiology, 160(4), 1686-1697.
+[2] Zhao, C., et al. (2017). Temperature increase reduces global yields of major
+    crops in four independent estimates. PNAS, 114(35), 9326-9331.
+[3] IPCC (2022). Climate Change 2022: Impacts, Adaptation and Vulnerability.
+    Contribution of Working Group II to the Sixth Assessment Report.

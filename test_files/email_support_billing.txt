@@ -1,0 +1,16 @@
+From: sandra.wolf@example.com
+To: billing@techcorp.com
+Subject: Question about my invoice from March
+Date: Wed, 22 Mar 2026 14:05:44 +0100
+
+Good afternoon,
+
+I received my invoice for March (invoice no. INV-2026-03-00847) and noticed a
+line item called "Premium Add-on – €12.99" that I do not recognise. I did not
+knowingly subscribe to any add-on.
+
+Could you clarify what this charge is for? If it was added by mistake, I would
+like to have it removed from my next invoice.
+
+Kind regards,
+Sandra Wolf

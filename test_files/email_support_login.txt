@@ -1,0 +1,17 @@
+From: thomas.beck@example.com
+To: support@techcorp.com
+Subject: Cannot log in to my account
+Date: Tue, 21 Mar 2026 11:32:17 +0100
+
+Hi there,
+
+I have been trying to log in to my account since this morning but keep getting
+the error message "Invalid credentials" even though I am sure my password is
+correct. I already tried resetting it twice, but the reset e-mail never arrives
+— I also checked my spam folder.
+
+Could you please help me regain access to my account? My registered e-mail
+address is thomas.beck@example.com and my username is TomB_92.
+
+Thanks in advance,
+Thomas Beck
