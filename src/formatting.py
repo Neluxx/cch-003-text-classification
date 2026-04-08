@@ -32,6 +32,19 @@ EMAIL_TYPE_LABELS = {
     "unknown": "Unknown",
 }
 
+ARTICLE_TOPIC_LABELS = {
+    "computer_science": "Computer Science",
+    "medicine": "Medicine",
+    "biology": "Biology",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "environmental_science": "Environmental Science",
+    "economics": "Economics",
+    "psychology": "Psychology",
+    "other": "Other",
+    "unknown": "Unknown",
+}
+
 
 def colored(text: str, color: str) -> str:
     return f"{color}{text}{RESET}"
@@ -56,6 +69,14 @@ def print_result(result) -> None:
         print(f"  {BOLD}E-Mail Type:{RESET} {colored(email_label, CYAN)}")
         print(f"  {BOLD}Confidence :{RESET} {colored(result.email_type_confidence.upper(), email_conf_colour)}")
         print(f"  {BOLD}Reasoning  :{RESET} {result.email_type_reasoning}")
+
+    if result.article_topic is not None:
+        topic_label = ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic)
+        topic_conf_colour = CONFIDENCE_COLORS.get(result.article_topic_confidence, YELLOW)
+        print(f"  {colored('─' * 56, BOLD)}")
+        print(f"  {BOLD}Topic      :{RESET} {colored(topic_label, CYAN)}")
+        print(f"  {BOLD}Confidence :{RESET} {colored(result.article_topic_confidence.upper(), topic_conf_colour)}")
+        print(f"  {BOLD}Reasoning  :{RESET} {result.article_topic_reasoning}")
 
     print(colored("─" * 60, BOLD))
     print()
