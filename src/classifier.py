@@ -6,7 +6,7 @@ from typing import Optional
 import ollama
 
 DEFAULT_MODEL = "qwen2.5:3b"
-PROMPTS_DIR = Path(__file__).parent / "prompts"
+PROMPT_FILE = Path(__file__).parent / "prompt.txt"
 
 
 @dataclass
@@ -20,14 +20,14 @@ class ClassificationResult:
     email_type: Optional[str] = None
     email_type_confidence: Optional[str] = None
     email_type_reasoning: Optional[str] = None
-    # E-mail mood (SG-004)
-    mood: Optional[str] = None
-    mood_confidence: Optional[str] = None
-    mood_reasoning: Optional[str] = None
     # Article topic (SG-003)
     article_topic: Optional[str] = None
     article_topic_confidence: Optional[str] = None
     article_topic_reasoning: Optional[str] = None
+    # E-mail mood (SG-004)
+    mood: Optional[str] = None
+    mood_confidence: Optional[str] = None
+    mood_reasoning: Optional[str] = None
 
 
 class Classifier:
@@ -37,32 +37,21 @@ class Classifier:
     def _call_ollama(self, prompt: str) -> str:
         """Send a prompt to the local Ollama instance and return the response text."""
         try:
-            response = ollama.generate(model=self.model, prompt=prompt)
+            response = ollama.generate(model=self.model, prompt=prompt, format="json")
             return response.response.strip()
         except ollama.ResponseError as exc:
             raise ConnectionError(f"Ollama error: {exc}") from exc
         except Exception as exc:
-            raise ConnectionError(f"Could not reach Ollama. Is it running?") from exc
+            raise ConnectionError("Could not reach Ollama. Is it running?") from exc
 
-    def _build_prompt(self, template_name: str, text: str) -> str:
-        template = (PROMPTS_DIR / template_name).read_text(encoding="utf-8")
-        return template.replace("{text}", text[:4000])
-
-    def _classify_document_type(self, text: str) -> ClassificationResult:
-        """Stage 1: classify text as email or scientific_article."""
-        prompt = self._build_prompt("classify_document_type.txt", text)
+    def _classify_text(self, text: str) -> ClassificationResult:
+        """Classify the provided text in a single Ollama call."""
+        prompt = PROMPT_FILE.read_text(encoding="utf-8").replace("{text}", text[:4000])
         raw_response = self._call_ollama(prompt)
 
         try:
             data = json.loads(raw_response)
-            return ClassificationResult(
-                model=self.model,
-                document_type=data.get("document_type", "unknown"),
-                confidence=data.get("confidence", "low"),
-                reasoning=data.get("reasoning", ""),
-                raw_file="",
-            )
-        except (json.JSONDecodeError, KeyError):
+        except json.JSONDecodeError:
             return ClassificationResult(
                 model=self.model,
                 document_type="unknown",
@@ -71,60 +60,22 @@ class Classifier:
                 raw_file="",
             )
 
-    def _classify_email_type(self, text: str, result: ClassificationResult) -> None:
-        """Stage 2a: classify email as support or complaint."""
-        prompt = self._build_prompt("classify_email_type.txt", text)
-        raw_response = self._call_ollama(prompt)
-
-        try:
-            data = json.loads(raw_response)
-            result.email_type = data.get("email_type", "unknown")
-            result.email_type_confidence = data.get("confidence", "low")
-            result.email_type_reasoning = data.get("reasoning", "")
-        except (json.JSONDecodeError, KeyError):
-            result.email_type = "unknown"
-            result.email_type_confidence = "low"
-            result.email_type_reasoning = f"Could not parse LLM response: {raw_response}"
-
-    def _classify_email_mood(self, text: str, result: ClassificationResult) -> None:
-        """Stage 3: classify the mood of an email as neutral, friendly, or angry."""
-        prompt = self._build_prompt("classify_email_mood.txt", text)
-        raw_response = self._call_ollama(prompt)
-
-        try:
-            data = json.loads(raw_response)
-            result.mood = data.get("mood", "unknown")
-            result.mood_confidence = data.get("confidence", "low")
-            result.mood_reasoning = data.get("reasoning", "")
-        except (json.JSONDecodeError, KeyError):
-            result.mood = "unknown"
-            result.mood_confidence = "low"
-            result.mood_reasoning = f"Could not parse LLM response: {raw_response}"
-
-    def _classify_article_topic(self, text: str, result: ClassificationResult) -> None:
-        """Stage 2b: classify the topic area of a scientific article."""
-        prompt = self._build_prompt("classify_article_topic.txt", text)
-        raw_response = self._call_ollama(prompt)
-
-        try:
-            data = json.loads(raw_response)
-            result.article_topic = data.get("article_topic", "unknown")
-            result.article_topic_confidence = data.get("confidence", "low")
-            result.article_topic_reasoning = data.get("reasoning", "")
-        except (json.JSONDecodeError, KeyError):
-            result.article_topic = "unknown"
-            result.article_topic_confidence = "low"
-            result.article_topic_reasoning = f"Could not parse LLM response: {raw_response}"
-
-    def _classify_text(self, text: str) -> ClassificationResult:
-        """Classify the provided text using a local Ollama LLM."""
-        result = self._classify_document_type(text)
-
-        if result.document_type == "email":
-            self._classify_email_type(text, result)
-            self._classify_email_mood(text, result)
-        elif result.document_type == "scientific_article":
-            self._classify_article_topic(text, result)
+        result = ClassificationResult(
+            model=self.model,
+            document_type=data.get("document_type", "unknown"),
+            confidence=data.get("confidence", "low"),
+            reasoning=data.get("reasoning", ""),
+            raw_file="",
+            email_type=data.get("email_type"),
+            email_type_confidence=data.get("email_type_confidence"),
+            email_type_reasoning=data.get("email_type_reasoning"),
+            mood=data.get("mood"),
+            mood_confidence=data.get("mood_confidence"),
+            mood_reasoning=data.get("mood_reasoning"),
+            article_topic=data.get("article_topic"),
+            article_topic_confidence=data.get("article_topic_confidence"),
+            article_topic_reasoning=data.get("article_topic_reasoning"),
+        )
 
         return result
 
