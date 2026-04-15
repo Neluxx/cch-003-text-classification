@@ -20,6 +20,13 @@ CONFIDENCE_COLORS = {
     "low": RED,
 }
 
+MOOD_COLORS = {
+    "neutral": CYAN,
+    "friendly": GREEN,
+    "angry": RED,
+    "unknown": YELLOW,
+}
+
 LABELS = {
     "email": "E-Mail",
     "scientific_article": "Scientific Article",
@@ -42,6 +49,13 @@ ARTICLE_TOPIC_LABELS = {
     "economics": "Economics",
     "psychology": "Psychology",
     "other": "Other",
+    "unknown": "Unknown",
+}
+
+MOOD_LABELS = {
+    "neutral": "Neutral",
+    "friendly": "Friendly",
+    "angry": "Angry",
     "unknown": "Unknown",
 }
 
@@ -69,6 +83,15 @@ def print_result(result) -> None:
         print(f"  {BOLD}E-Mail Type:{RESET} {colored(email_label, CYAN)}")
         print(f"  {BOLD}Confidence :{RESET} {colored(result.email_type_confidence.upper(), email_conf_colour)}")
         print(f"  {BOLD}Reasoning  :{RESET} {result.email_type_reasoning}")
+
+    if result.mood is not None:
+        mood_label = MOOD_LABELS.get(result.mood, result.mood)
+        mood_colour = MOOD_COLORS.get(result.mood, YELLOW)
+        mood_conf_colour = CONFIDENCE_COLORS.get(result.mood_confidence, YELLOW)
+        print(f"  {colored('─' * 56, BOLD)}")
+        print(f"  {BOLD}Mood       :{RESET} {colored(mood_label, mood_colour)}")
+        print(f"  {BOLD}Confidence :{RESET} {colored(result.mood_confidence.upper(), mood_conf_colour)}")
+        print(f"  {BOLD}Reasoning  :{RESET} {result.mood_reasoning}")
 
     if result.article_topic is not None:
         topic_label = ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic)

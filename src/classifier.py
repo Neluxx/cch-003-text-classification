@@ -20,6 +20,10 @@ class ClassificationResult:
     email_type: Optional[str] = None
     email_type_confidence: Optional[str] = None
     email_type_reasoning: Optional[str] = None
+    # E-mail mood (SG-004)
+    mood: Optional[str] = None
+    mood_confidence: Optional[str] = None
+    mood_reasoning: Optional[str] = None
     # Article topic (SG-003)
     article_topic: Optional[str] = None
     article_topic_confidence: Optional[str] = None
@@ -82,6 +86,21 @@ class Classifier:
             result.email_type_confidence = "low"
             result.email_type_reasoning = f"Could not parse LLM response: {raw_response}"
 
+    def _classify_email_mood(self, text: str, result: ClassificationResult) -> None:
+        """Stage 3: classify the mood of an email as neutral, friendly, or angry."""
+        prompt = self._build_prompt("classify_email_mood.txt", text)
+        raw_response = self._call_ollama(prompt)
+
+        try:
+            data = json.loads(raw_response)
+            result.mood = data.get("mood", "unknown")
+            result.mood_confidence = data.get("confidence", "low")
+            result.mood_reasoning = data.get("reasoning", "")
+        except (json.JSONDecodeError, KeyError):
+            result.mood = "unknown"
+            result.mood_confidence = "low"
+            result.mood_reasoning = f"Could not parse LLM response: {raw_response}"
+
     def _classify_article_topic(self, text: str, result: ClassificationResult) -> None:
         """Stage 2b: classify the topic area of a scientific article."""
         prompt = self._build_prompt("classify_article_topic.txt", text)
@@ -103,6 +122,7 @@ class Classifier:
 
         if result.document_type == "email":
             self._classify_email_type(text, result)
+            self._classify_email_mood(text, result)
         elif result.document_type == "scientific_article":
             self._classify_article_topic(text, result)
 
