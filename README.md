@@ -41,13 +41,9 @@ source .venv/bin/activate
 cch-003-text-classification/
 ├── main.py              # CLI entry point
 ├── src/
+│   ├── prompt.txt       # Prompt for Ollama
 │   ├── classifier.py    # Core classification logic
-│   ├── formatting.py    # Colored output and error formatting
-│   └── prompts/
-│       ├── classify_document_type.txt   # Stage 1: email vs. scientific article
-│       ├── classify_email_type.txt      # Stage 2a: support vs. complaint
-│       ├── classify_email_mood.txt      # Stage 3: mood of the email sender
-│       └── classify_article_topic.txt   # Stage 2b: topic area of the article
+│   └── formatting.py    # Colored output and error formatting
 └── test_files/
 ```
 
@@ -68,9 +64,8 @@ python main.py test_files/email_support.txt --model llama3.2:3b
 
 ### Example output
 
-For an **e-mail**, classification runs in three stages. Stage 1 identifies the
-document type, stage 2 determines whether it is a support case or a complaint,
-and stage 3 classifies the sender's mood:
+For an **e-mail**, the classification identifies the document type, determines
+whether it is a support case or a complaint, and classifies the sender's mood:
 
 ```
 ────────────────────────────────────────────────────────────
@@ -90,7 +85,7 @@ and stage 3 classifies the sender's mood:
 ────────────────────────────────────────────────────────────
 ```
 
-For a **scientific article**, stage 2 determines the primary subject area:
+For a **scientific article**, the classification returns the primary subject area:
 
 ```
 ────────────────────────────────────────────────────────────
@@ -110,14 +105,16 @@ For a **scientific article**, stage 2 determines the primary subject area:
 
 ## Classification logic
 
-E-mails are classified in three stages; scientific articles in two:
+Every document is classified using a unified prompt.
+The model always returns the document type plus the sub-classifications
+relevant to that type (fields for the inactive branch are returned as `null`).
 
-| Stage | Trigger              | Output                                                                                                                            |
-|-------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Any document         | `email` or `scientific_article`                                                                                                   |
-| 2a    | E-mails only         | `support` or `complaint`                                                                                                          |
-| 2b    | Scientific articles  | `computer_science`, `medicine`, `biology`, `physics`, `chemistry`, `environmental_science`, `economics`, `psychology`, or `other` |
-| 3     | E-mails only         | `neutral`, `friendly`, or `angry`                                                                                                 |
+| Dimension       | Applies to           | Possible values                                                                                                                   |
+|-----------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Document type   | Any document         | `email` or `scientific_article`                                                                                                   |
+| E-mail type     | E-mails only         | `support` or `complaint`                                                                                                          |
+| Mood            | E-mails only         | `neutral`, `friendly`, or `angry`                                                                                                 |
+| Article topic   | Scientific articles  | `computer_science`, `medicine`, `biology`, `physics`, `chemistry`, `environmental_science`, `economics`, `psychology`, or `other` |
 
 ---
 
