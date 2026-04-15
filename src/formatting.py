@@ -65,6 +65,7 @@ def colored(text: str, color: str) -> str:
 
 
 def print_result(result) -> None:
+    """Print a classification result to stdout with ANSI colours."""
     type_colour = TYPE_COLORS.get(result.document_type, YELLOW)
     conf_colour = CONFIDENCE_COLORS.get(result.confidence, YELLOW)
     label = LABELS.get(result.document_type, result.document_type)
@@ -103,6 +104,49 @@ def print_result(result) -> None:
 
     print(colored("─" * 60, BOLD))
     print()
+
+
+def format_result_text(result) -> str:
+    """Return a plain-text (no ANSI) representation of a classification result."""
+    label = LABELS.get(result.document_type, result.document_type)
+    lines = [
+        "─" * 60,
+        f"  Model      : {result.model}",
+        f"  File       : {result.raw_file}",
+        f"  Type       : {label}",
+        f"  Confidence : {result.confidence.upper()}",
+        f"  Reasoning  : {result.reasoning}",
+    ]
+
+    if result.email_type is not None:
+        email_label = EMAIL_TYPE_LABELS.get(result.email_type, result.email_type)
+        lines += [
+            "  " + "─" * 56,
+            f"  E-Mail Type: {email_label}",
+            f"  Confidence : {result.email_type_confidence.upper()}",
+            f"  Reasoning  : {result.email_type_reasoning}",
+        ]
+
+    if result.mood is not None:
+        mood_label = MOOD_LABELS.get(result.mood, result.mood)
+        lines += [
+            "  " + "─" * 56,
+            f"  Mood       : {mood_label}",
+            f"  Confidence : {result.mood_confidence.upper()}",
+            f"  Reasoning  : {result.mood_reasoning}",
+        ]
+
+    if result.article_topic is not None:
+        topic_label = ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic)
+        lines += [
+            "  " + "─" * 56,
+            f"  Topic      : {topic_label}",
+            f"  Confidence : {result.article_topic_confidence.upper()}",
+            f"  Reasoning  : {result.article_topic_reasoning}",
+        ]
+
+    lines.append("─" * 60)
+    return "\n".join(lines) + "\n"
 
 
 def print_error(message: str, exc: Exception | None = None) -> None:
