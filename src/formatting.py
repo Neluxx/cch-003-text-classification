@@ -1,155 +1,101 @@
 import sys
+from dataclasses import dataclass
+from typing import Optional
 
-# ANSI colors
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-RED = "\033[91m"
-CYAN = "\033[96m"
-BOLD = "\033[1m"
-RESET = "\033[0m"
-
-TYPE_COLORS = {
-    "email": CYAN,
-    "scientific_article": CYAN,
-    "unknown": YELLOW,
-}
-
-CONFIDENCE_COLORS = {
-    "high": GREEN,
-    "medium": YELLOW,
-    "low": RED,
-}
-
-MOOD_COLORS = {
-    "neutral": CYAN,
-    "friendly": GREEN,
-    "angry": RED,
-    "unknown": YELLOW,
-}
-
-LABELS = {
-    "email": "E-Mail",
-    "scientific_article": "Scientific Article",
-    "unknown": "Unknown",
-}
-
-EMAIL_TYPE_LABELS = {
-    "support": "Support",
-    "complaint": "Complaint",
-    "unknown": "Unknown",
-}
-
-ARTICLE_TOPIC_LABELS = {
-    "computer_science": "Computer Science",
-    "medicine": "Medicine",
-    "biology": "Biology",
-    "physics": "Physics",
-    "chemistry": "Chemistry",
-    "environmental_science": "Environmental Science",
-    "economics": "Economics",
-    "psychology": "Psychology",
-    "other": "Other",
-    "unknown": "Unknown",
-}
-
-MOOD_LABELS = {
-    "neutral": "Neutral",
-    "friendly": "Friendly",
-    "angry": "Angry",
-    "unknown": "Unknown",
-}
+from src.constants import *
 
 
-def colored(text: str, color: str) -> str:
-    return f"{color}{text}{RESET}"
+@dataclass
+class Section:
+    """A labelled classification section (e.g. the E-Mail Type block)."""
+    label: str
+    value: str
+    value_color: str
+    confidence: str
+    reasoning: str
+
+
+def _colored(text: str, color: str, use_color: bool) -> str:
+    return f"{color}{text}{RESET}" if use_color else text
+
+
+def _safe_upper(value: Optional[str]) -> str:
+    return value.upper() if value else "UNKNOWN"
+
+
+def _build_sections(result) -> list[Section]:
+    sections: list[Section] = []
+
+    if result.email_type is not None:
+        sections.append(Section(
+            label="E-Mail Type",
+            value=EMAIL_TYPE_LABELS.get(result.email_type, result.email_type),
+            value_color=CYAN,
+            confidence=result.email_type_confidence or "low",
+            reasoning=result.email_type_reasoning or "",
+        ))
+
+    if result.mood is not None:
+        sections.append(Section(
+            label="Mood       ",
+            value=MOOD_LABELS.get(result.mood, result.mood),
+            value_color=MOOD_COLORS.get(result.mood, YELLOW),
+            confidence=result.mood_confidence or "low",
+            reasoning=result.mood_reasoning or "",
+        ))
+
+    if result.article_topic is not None:
+        sections.append(Section(
+            label="Topic      ",
+            value=ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic),
+            value_color=CYAN,
+            confidence=result.article_topic_confidence or "low",
+            reasoning=result.article_topic_reasoning or "",
+        ))
+
+    return sections
+
+
+def _render(result, use_color: bool) -> str:
+    type_label = LABELS.get(result.document_type, result.document_type)
+    type_color = TYPE_COLORS.get(result.document_type, YELLOW)
+    conf_color = CONFIDENCE_COLORS.get(result.confidence, YELLOW)
+
+    def b(text: str) -> str:
+        return _colored(text, BOLD, use_color)
+
+    lines = [
+        _colored(OUTER_RULE, BOLD, use_color),
+        f"  {b('Model      :')} {result.model}",
+        f"  {b('File       :')} {result.raw_file}",
+        f"  {b('Type       :')} {_colored(type_label, type_color, use_color)}",
+        f"  {b('Confidence :')} {_colored(_safe_upper(result.confidence), conf_color, use_color)}",
+        f"  {b('Reasoning  :')} {result.reasoning}",
+    ]
+
+    for section in _build_sections(result):
+        section_conf_color = CONFIDENCE_COLORS.get(section.confidence, YELLOW)
+        lines += [
+            f"  {_colored(INNER_RULE, BOLD, use_color)}",
+            f"  {b(f'{section.label}:')} {_colored(section.value, section.value_color, use_color)}",
+            f"  {b('Confidence :')} {_colored(_safe_upper(section.confidence), section_conf_color, use_color)}",
+            f"  {b('Reasoning  :')} {section.reasoning}",
+        ]
+
+    lines.append(_colored(OUTER_RULE, BOLD, use_color))
+    return "\n".join(lines)
 
 
 def print_result(result) -> None:
-    """Print a classification result to stdout with ANSI colours."""
-    type_colour = TYPE_COLORS.get(result.document_type, YELLOW)
-    conf_colour = CONFIDENCE_COLORS.get(result.confidence, YELLOW)
-    label = LABELS.get(result.document_type, result.document_type)
-
-    print(colored("─" * 60, BOLD))
-    print(f"  {BOLD}Model      :{RESET} {result.model}")
-    print(f"  {BOLD}File       :{RESET} {result.raw_file}")
-    print(f"  {BOLD}Type       :{RESET} {colored(label, type_colour)}")
-    print(f"  {BOLD}Confidence :{RESET} {colored(result.confidence.upper(), conf_colour)}")
-    print(f"  {BOLD}Reasoning  :{RESET} {result.reasoning}")
-
-    if result.email_type is not None:
-        email_label = EMAIL_TYPE_LABELS.get(result.email_type, result.email_type)
-        email_conf_colour = CONFIDENCE_COLORS.get(result.email_type_confidence, YELLOW)
-        print(f"  {colored('─' * 56, BOLD)}")
-        print(f"  {BOLD}E-Mail Type:{RESET} {colored(email_label, CYAN)}")
-        print(f"  {BOLD}Confidence :{RESET} {colored(result.email_type_confidence.upper(), email_conf_colour)}")
-        print(f"  {BOLD}Reasoning  :{RESET} {result.email_type_reasoning}")
-
-    if result.mood is not None:
-        mood_label = MOOD_LABELS.get(result.mood, result.mood)
-        mood_colour = MOOD_COLORS.get(result.mood, YELLOW)
-        mood_conf_colour = CONFIDENCE_COLORS.get(result.mood_confidence, YELLOW)
-        print(f"  {colored('─' * 56, BOLD)}")
-        print(f"  {BOLD}Mood       :{RESET} {colored(mood_label, mood_colour)}")
-        print(f"  {BOLD}Confidence :{RESET} {colored(result.mood_confidence.upper(), mood_conf_colour)}")
-        print(f"  {BOLD}Reasoning  :{RESET} {result.mood_reasoning}")
-
-    if result.article_topic is not None:
-        topic_label = ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic)
-        topic_conf_colour = CONFIDENCE_COLORS.get(result.article_topic_confidence, YELLOW)
-        print(f"  {colored('─' * 56, BOLD)}")
-        print(f"  {BOLD}Topic      :{RESET} {colored(topic_label, CYAN)}")
-        print(f"  {BOLD}Confidence :{RESET} {colored(result.article_topic_confidence.upper(), topic_conf_colour)}")
-        print(f"  {BOLD}Reasoning  :{RESET} {result.article_topic_reasoning}")
-
-    print(colored("─" * 60, BOLD))
+    print(_render(result, use_color=True))
     print()
 
 
 def format_result_text(result) -> str:
-    """Return a plain-text (no ANSI) representation of a classification result."""
-    label = LABELS.get(result.document_type, result.document_type)
-    lines = [
-        "─" * 60,
-        f"  Model      : {result.model}",
-        f"  File       : {result.raw_file}",
-        f"  Type       : {label}",
-        f"  Confidence : {result.confidence.upper()}",
-        f"  Reasoning  : {result.reasoning}",
-    ]
-
-    if result.email_type is not None:
-        email_label = EMAIL_TYPE_LABELS.get(result.email_type, result.email_type)
-        lines += [
-            "  " + "─" * 56,
-            f"  E-Mail Type: {email_label}",
-            f"  Confidence : {result.email_type_confidence.upper()}",
-            f"  Reasoning  : {result.email_type_reasoning}",
-        ]
-
-    if result.mood is not None:
-        mood_label = MOOD_LABELS.get(result.mood, result.mood)
-        lines += [
-            "  " + "─" * 56,
-            f"  Mood       : {mood_label}",
-            f"  Confidence : {result.mood_confidence.upper()}",
-            f"  Reasoning  : {result.mood_reasoning}",
-        ]
-
-    if result.article_topic is not None:
-        topic_label = ARTICLE_TOPIC_LABELS.get(result.article_topic, result.article_topic)
-        lines += [
-            "  " + "─" * 56,
-            f"  Topic      : {topic_label}",
-            f"  Confidence : {result.article_topic_confidence.upper()}",
-            f"  Reasoning  : {result.article_topic_reasoning}",
-        ]
-
-    lines.append("─" * 60)
-    return "\n".join(lines) + "\n"
+    return _render(result, use_color=False) + "\n"
 
 
 def print_error(message: str, exc: Exception | None = None) -> None:
     if exc is not None:
         message = f"{message}: {exc}"
-    print(f"{colored('ERROR:', RED)} {message}", file=sys.stderr)
+    print(f"{_colored('ERROR:', RED, True)} {message}", file=sys.stderr)

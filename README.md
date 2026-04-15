@@ -43,7 +43,8 @@ cch-003-text-classification/
 ├── src/
 │   ├── prompt.txt       # Prompt for Ollama
 │   ├── classifier.py    # Core classification logic
-│   └── formatting.py    # Colored output and error formatting
+│   ├── formatting.py    # Output and error formatting
+│   └── constants.py     # Color codes and labels
 └── test_files/
 ```
 
